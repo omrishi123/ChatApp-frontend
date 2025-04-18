@@ -11,12 +11,12 @@ export const register = async (data) => {
   Object.entries(data).forEach(([key, value]) => {
     if (value) form.append(key, value);
   });
-  const res = await API.post('/auth/register', form);
+  const res = await API.post('/api/auth/register', form);
   return res.data;
 };
 
 export const login = async (email, password) => {
-  const res = await API.post('/auth/login', { email, password });
+  const res = await API.post('/api/auth/login', { email, password });
   return res.data;
 };
 
