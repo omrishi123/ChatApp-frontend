@@ -21,7 +21,7 @@ export const login = async (email, password) => {
 };
 
 export const getProfile = async (token) => {
-  const res = await API.get('/api.auth/me', { headers: { Authorization: `Bearer ${token}` } });
+  const res = await API.get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
 
