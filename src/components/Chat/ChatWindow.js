@@ -113,7 +113,17 @@ export default function ChatWindow() {
   return (
     <div className="chat-window-container">
       <header className="chat-header">
-        <img src={otherUser?.profilePic ? `${process.env.REACT_APP_API_URL}/uploads/${otherUser.profilePic}` : '/default-avatar.png'} alt={otherUser?.username} className="profile-pic" />
+        <img
+          src={
+            otherUser?.profilePic
+              ? otherUser.profilePic.startsWith('/uploads/')
+                ? `${process.env.REACT_APP_API_URL}${otherUser.profilePic}`
+                : `${process.env.REACT_APP_API_URL}/uploads/${otherUser.profilePic}`
+              : '/default-avatar.png'
+          }
+          alt={otherUser?.username}
+          className="profile-pic"
+        />
         <span className="chat-user-name">{otherUser?.username}</span>
         <span className="typing-indicator">{typing && 'Typing...'}</span>
       </header>
