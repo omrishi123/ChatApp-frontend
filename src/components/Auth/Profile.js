@@ -29,11 +29,11 @@ export default function Profile() {
   return (
     <div className="profile-container">
       <h2>My Profile</h2>
-      <img src={user.profilePic || '/default-avatar.png'} alt="Profile" className="profile-pic" />
+      <img src={user.profilePic ? `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}` : '/default-avatar.png'} alt="Profile" className="profile-pic" />
       <form onSubmit={handleSubmit}>
         <input type="text" name="username" value={form.username} onChange={handleChange} required />
         <input type="password" name="password" placeholder="New Password" value={form.password} onChange={handleChange} />
-        <input type="file" name="profilePic" accept="image/*" onChange={handleChange} />
+        <input type="file" name="profilePic" accept="image/png, image/jpeg, image/jpg" onChange={handleChange} />
         <button type="submit" disabled={loading}>Update</button>
       </form>
       <button onClick={logout}>Logout</button>
