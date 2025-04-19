@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API from 'src/utils/api.js'; // <-- Use your custom Axios instance
+import API from '../../utils/api.js'; // <-- Use your custom Axios instance
 import './AdminPanel.css';
 
 export default function AdminLogin({ onLogin }) {
