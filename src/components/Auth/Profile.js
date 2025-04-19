@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { updateProfile } from '../../utils/api';
+import React, { useState } from 'react.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { updateProfile } from '../../utils/api.js';
 import { toast } from 'react-toastify';
 
 export default function Profile() {

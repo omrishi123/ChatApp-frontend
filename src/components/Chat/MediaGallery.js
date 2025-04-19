@@ -1,6 +1,6 @@
 import React from 'react';
 import { useChat } from '../../context/ChatContext';
-import { isImage, isVideo, isAudio } from '../../utils/helpers';
+import { isImage, isVideo, isAudio } from '../../utils/helpers.js';
 
 export default function MediaGallery() {
   const { messages } = useChat();

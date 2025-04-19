@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { searchUsers, startChat } from '../../utils/api';
+import { searchUsers, startChat } from '../../utils/api.js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

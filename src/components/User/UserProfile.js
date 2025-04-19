@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getUserProfile, blockUser, unblockUser } from '../../utils/api';
+import { getUserProfile, blockUser, unblockUser } from '../../utils/api.js';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
