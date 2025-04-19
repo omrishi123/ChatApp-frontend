@@ -102,3 +102,5 @@ export const unstarMessage = async (token, messageId) => {
   const res = await API.post('/api/messages/unstar', { messageId }, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
+
+export default API;
