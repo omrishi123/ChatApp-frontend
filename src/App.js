@@ -10,7 +10,7 @@ import UserProfile from './components/User/UserProfile';
 import { ToastContainer } from 'react-toastify';
 import { useAuth } from './context/AuthContext';
 import useSocketMessageListener from './hooks/useSocketMessageListener';
-import axios from 'axios';
+import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
 
 function App() {
@@ -21,10 +21,10 @@ function App() {
   useSocketMessageListener(); // Listen for new messages globally
 
   useEffect(() => {
-    if (!user) return; // Only fetch/show announcement for logged-in users
-    axios.get('/api/admin/public-announcements')
+    if (!user) return;
+    API.get('/api/admin/public-announcements')
       .then(res => {
-        const pinned = res.data[0]; // Show the latest pinned announcement
+        const pinned = res.data[0];
         if (pinned) {
           setPinnedAnnouncement(pinned);
           setShowAnnouncement(true);
