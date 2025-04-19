@@ -113,7 +113,7 @@ export default function ChatWindow() {
   return (
     <div className="chat-window-container">
       <header className="chat-header">
-        <img src={otherUser?.profilePic ? `http://localhost:5000${otherUser.profilePic}` : '/default-avatar.png'} alt={otherUser?.username} className="profile-pic" />
+        <img src={otherUser?.profilePic ? `${process.env.REACT_APP_API_URL}/uploads/${otherUser.profilePic}` : '/default-avatar.png'} alt={otherUser?.username} className="profile-pic" />
         <span className="chat-user-name">{otherUser?.username}</span>
         <span className="typing-indicator">{typing && 'Typing...'}</span>
       </header>
@@ -147,7 +147,7 @@ export default function ChatWindow() {
               onTouchStart={() => handleLongPressStart(m._id)}
               onTouchEnd={handleLongPressEnd}
             >
-              {m.media && <img src={(m.media.startsWith('http') ? m.media : `${window.location.origin}/uploads/${m.media.replace(/^.*[\\/]/, '')}`)} alt="media" className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px'}} />}
+              {m.media && <img src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} alt="media" className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px'}} />}
               {m.text && <span className="text">{m.text}</span>}
               <span className="meta" style={{fontSize:'0.75em',color:'#555',display:'block',marginTop:'2px'}}>
                 {formatTime(m.createdAt)}

@@ -12,7 +12,7 @@ export default function MediaGallery() {
       <div className="media-list">
         {medias.map(m => (
           <div key={m._id} className="media-item">
-            {isImage(m.mediaType) && <img src={(m.media.startsWith('http') ? m.media : `${window.location.origin}/uploads/${m.media.replace(/^.*[\\/]/, '')}`)} alt="media" />}
+            {isImage(m.mediaType) && <img src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} alt="media" />}
             {isVideo(m.mediaType) && <video src={m.media} controls />}
             {isAudio(m.mediaType) && <audio src={m.media} controls />}
           </div>
