@@ -13,7 +13,7 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await API.post('/api/auth/login', { email, password });
       if (res.data.user.email !== 'omrishi2580@gmail.com') {
         setError('Not an admin account');
         setLoading(false);
