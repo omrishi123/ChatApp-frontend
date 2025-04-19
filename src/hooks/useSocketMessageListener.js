@@ -1,7 +1,7 @@
-import { useEffect } from 'react.js';
-import { getSocket } from '../utils/socket.js';
-import { useChat } from '../context/ChatContext.js';
-import { useAuth } from '../context/AuthContext.js';
+import { useEffect } from 'react';
+import { getSocket } from '../utils/socket';
+import { useChat } from '../context/ChatContext';
+import { useAuth } from '../context/AuthContext';
 
 // This hook listens globally for new messages and updates the relevant chat/message state
 export default function useSocketMessageListener() {

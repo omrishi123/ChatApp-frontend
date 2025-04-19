@@ -1,4 +1,4 @@
-import axios from 'axios.js';
+import axios from 'axios';
 
 // Use the environment variable for API base URL, fallback to relative '/api' for local dev
 const API = axios.create({

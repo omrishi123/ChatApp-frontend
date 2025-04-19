@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
-import { getChats } from '../../utils/api.js';
+import { getChats } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
-import { getSocket } from '../../utils/socket.js';
-import { formatTime } from '../../utils/helpers.js';
+import { getSocket } from '../../utils/socket';
+import { formatTime } from '../../utils/helpers';
 
 export default function ChatList() {
   const { user, token, logout } = useAuth();

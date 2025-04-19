@@ -1,5 +1,5 @@
-import React, { useState } from 'react.js';
-import API from '../../utils/api.js';
+import React, { useState } from 'react';
+import API from '../../utils/api';
 import './AdminPanel.css';
 
 export default function AdminLogin({ onLogin }) {

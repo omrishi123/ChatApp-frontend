@@ -1,8 +1,8 @@
-import React, { useState } from 'react.js';
-import { useAuth } from '../../context/AuthContext.js';
-import { useChat } from '../../context/ChatContext.js';
-import { sendMessage } from '../../utils/api.js';
-import { getSocket } from '../../utils/socket.js';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useChat } from '../../context/ChatContext';
+import { sendMessage } from '../../utils/api';
+import { getSocket } from '../../utils/socket';
 
 export default function MessageInput({ chatId }) {
   const { user, token } = useAuth();
