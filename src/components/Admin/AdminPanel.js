@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API from '../../utils/api';
+import API from './utils/api.js';
 import './AdminPanel.css';
 
 export default function AdminPanel({ token, onLogout }) {

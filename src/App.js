@@ -10,7 +10,7 @@ import UserProfile from './components/User/UserProfile';
 import { ToastContainer } from 'react-toastify';
 import { useAuth } from './context/AuthContext';
 import useSocketMessageListener from './hooks/useSocketMessageListener';
-import API from '../../utils/api';
+import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
 
 function App() {
