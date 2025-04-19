@@ -54,7 +54,7 @@ export default function AdminPanel({ token, onLogout }) {
 
   async function fetchUsers() {
     try {
-      const res = await axios.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
       setUsers(res.data);
     } catch (err) {
       setError('Failed to fetch users: ' + (err.response?.data?.message || err.message));
@@ -62,7 +62,7 @@ export default function AdminPanel({ token, onLogout }) {
   }
   async function fetchChats() {
     try {
-      const res = await axios.get('/api/admin/chats', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/chats', { headers: { Authorization: `Bearer ${token}` } });
       setChats(res.data);
     } catch (err) {
       setError('Failed to fetch chats: ' + (err.response?.data?.message || err.message));
@@ -70,7 +70,7 @@ export default function AdminPanel({ token, onLogout }) {
   }
   async function fetchMessages() {
     try {
-      const res = await axios.get('/api/admin/messages', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/messages', { headers: { Authorization: `Bearer ${token}` } });
       setMessages(res.data);
     } catch (err) {
       setError('Failed to fetch messages: ' + (err.response?.data?.message || err.message));
@@ -79,7 +79,7 @@ export default function AdminPanel({ token, onLogout }) {
 
   async function fetchStats() {
     try {
-      const res = await axios.get('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } });
       setStats(res.data);
     } catch (err) {
       setError('Failed to fetch stats: ' + (err.response?.data?.message || err.message));
@@ -88,7 +88,7 @@ export default function AdminPanel({ token, onLogout }) {
 
   async function fetchKeywords() {
     try {
-      const res = await axios.get('/api/admin/keywords', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/keywords', { headers: { Authorization: `Bearer ${token}` } });
       setKeywords(res.data);
     } catch (err) {
       setError('Failed to fetch keywords: ' + (err.response?.data?.message || err.message));
@@ -97,7 +97,7 @@ export default function AdminPanel({ token, onLogout }) {
 
   async function fetchAnnouncements() {
     try {
-      const res = await axios.get('/api/admin/announcements', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/announcements', { headers: { Authorization: `Bearer ${token}` } });
       setAnnouncements(res.data);
     } catch (err) {
       setError('Failed to fetch announcements: ' + (err.response?.data?.message || err.message));
@@ -110,7 +110,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Sending...');
     setError('');
     try {
-      await axios.post('/api/admin/message', {
+      await API.post('/api/admin/message', {
         toUserId: selectedUser,
         content: messageContent
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -129,7 +129,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Resetting...');
     setError('');
     try {
-      await axios.post('/api/admin/reset-password', {
+      await API.post('/api/admin/reset-password', {
         userId: resetUserId,
         newPassword: resetPassword
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -145,7 +145,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus(banned ? 'Unbanning user...' : 'Banning user...');
     setError('');
     try {
-      const res = await axios.post('/api/admin/ban', { userId }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post('/api/admin/ban', { userId }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus(res.data.msg);
       fetchUsers();
     } catch (err) {
@@ -159,7 +159,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Updating user...');
     setError('');
     try {
-      await axios.post('/api/admin/edit-user', {
+      await API.post('/api/admin/edit-user', {
         userId: editUserId,
         email: editUserEmail,
         username: editUserUsername,
@@ -178,7 +178,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Fetching user activity...');
     setError('');
     try {
-      const res = await axios.get(`/api/admin/user-activity/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get(`/api/admin/user-activity/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
       setUserActivity(res.data);
       setActivityUserId(userId);
       setStatus('');
@@ -192,7 +192,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Deleting message...');
     setError('');
     try {
-      await axios.post('/api/admin/delete-message', { messageId }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/delete-message', { messageId }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus('Message deleted!');
       fetchMessages();
     } catch (err) {
@@ -205,7 +205,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Deleting chat...');
     setError('');
     try {
-      await axios.post('/api/admin/delete-chat', { chatId }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/delete-chat', { chatId }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus('Chat deleted!');
       fetchChats();
       fetchMessages();
@@ -221,7 +221,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Adding keyword...');
     setError('');
     try {
-      await axios.post('/api/admin/add-keyword', { word: newKeyword }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/add-keyword', { word: newKeyword }, { headers: { Authorization: `Bearer ${token}` } });
       setNewKeyword('');
       setStatus('Keyword added!');
       fetchKeywords();
@@ -235,7 +235,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Removing keyword...');
     setError('');
     try {
-      await axios.post('/api/admin/remove-keyword', { word }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/remove-keyword', { word }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus('Keyword removed!');
       fetchKeywords();
     } catch (err) {
@@ -250,7 +250,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Sending announcement...');
     setError('');
     try {
-      await axios.post('/api/admin/announcement', { text: announcementText, pinned: announcementPinned }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/announcement', { text: announcementText, pinned: announcementPinned }, { headers: { Authorization: `Bearer ${token}` } });
       setAnnouncementText(''); setAnnouncementPinned(false);
       setStatus('Announcement sent!');
       fetchAnnouncements();
@@ -264,7 +264,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus(pinned ? 'Pinning...' : 'Unpinning...');
     setError('');
     try {
-      await axios.post('/api/admin/pin-announcement', { announcementId, pinned }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/pin-announcement', { announcementId, pinned }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus(pinned ? 'Announcement pinned!' : 'Announcement unpinned!');
       fetchAnnouncements();
     } catch (err) {
@@ -277,7 +277,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Deleting announcement...');
     setError('');
     try {
-      await axios.post('/api/admin/delete-announcement', { announcementId }, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/api/admin/delete-announcement', { announcementId }, { headers: { Authorization: `Bearer ${token}` } });
       setStatus('Announcement deleted!');
       fetchAnnouncements();
     } catch (err) {
@@ -297,7 +297,7 @@ export default function AdminPanel({ token, onLogout }) {
       return;
     }
     try {
-      const res = await axios.post('/api/admin/impersonate', { userId: impersonateUserId }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post('/api/admin/impersonate', { userId: impersonateUserId }, { headers: { Authorization: `Bearer ${token}` } });
       setImpersonateToken(res.data.token);
       setStatus('Impersonation token generated!');
     } catch (err) {
@@ -317,7 +317,7 @@ export default function AdminPanel({ token, onLogout }) {
       return;
     }
     try {
-      const res = await axios.get(`/api/admin/user-chathistory/${chatHistoryUserId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get(`/api/admin/user-chathistory/${chatHistoryUserId}`, { headers: { Authorization: `Bearer ${token}` } });
       setChatHistory(res.data);
       setStatus('');
     } catch (err) {
@@ -330,7 +330,7 @@ export default function AdminPanel({ token, onLogout }) {
     setStatus('Checking server health...');
     setError('');
     try {
-      const res = await axios.get('/api/admin/health', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get('/api/admin/health', { headers: { Authorization: `Bearer ${token}` } });
       setServerHealth(res.data);
       setStatus('');
     } catch (err) {
@@ -343,7 +343,7 @@ export default function AdminPanel({ token, onLogout }) {
     setBackupStatus('Triggering backup...');
     setError('');
     try {
-      const res = await axios.post('/api/admin/backup', {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post('/api/admin/backup', {}, { headers: { Authorization: `Bearer ${token}` } });
       setBackupStatus(res.data.msg || 'Backup triggered!');
     } catch (err) {
       setError('Failed to backup: ' + (err.response?.data?.message || err.message));
@@ -355,7 +355,7 @@ export default function AdminPanel({ token, onLogout }) {
     setRestoreStatus('Triggering restore...');
     setError('');
     try {
-      const res = await axios.post('/api/admin/restore', {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post('/api/admin/restore', {}, { headers: { Authorization: `Bearer ${token}` } });
       setRestoreStatus(res.data.msg || 'Restore triggered!');
     } catch (err) {
       setError('Failed to restore: ' + (err.response?.data?.message || err.message));
