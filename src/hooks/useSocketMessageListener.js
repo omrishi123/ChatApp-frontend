@@ -12,13 +12,31 @@ export default function useSocketMessageListener() {
     const socket = getSocket();
     function handleNewMessage(msg) {
       console.log('Received newMessage:', msg);
-      // Update chat preview/unread even if chat is not open
+      // Always update chat preview/unread (even if chat is not open)
       setChats(prevChats => {
-        return prevChats.map(chat =>
-          chat._id === msg.chat
-            ? { ...chat, lastMessage: msg, unreadCount: chat._id === (activeChat && activeChat._id) ? 0 : (chat.unreadCount || 0) + 1 }
-            : chat
-        );
+        let found = false;
+        const updated = prevChats.map(chat => {
+          if (chat._id === msg.chat) {
+            found = true;
+            return {
+              ...chat,
+              lastMessage: msg,
+              unreadCount: (!activeChat || chat._id !== activeChat._id) ? (chat.unreadCount || 0) + 1 : 0
+            };
+          }
+          return chat;
+        });
+        // If chat is not in list (e.g. new chat started), add it
+        if (!found) {
+          updated.unshift({
+            _id: msg.chat,
+            lastMessage: msg,
+            unreadCount: 1,
+            participants: msg.participants || [],
+            otherUser: msg.sender // fallback
+          });
+        }
+        return updated;
       });
       // If active chat is open, append message
       if (activeChat && msg.chat === activeChat._id) {
@@ -26,16 +44,18 @@ export default function useSocketMessageListener() {
           setMessages(prev => [...prev, msg].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
         }
       }
-      // Play notification sound if chat is not open
-      if (!activeChat || msg.chat !== activeChat._id) {
-        const apiUrl = process.env.REACT_APP_API_URL || '';
-        const audio = new window.Audio(`${apiUrl}/notification.mp3`);
-        audio.play();
+      // Always play notification sound for any new message not sent by me
+      if (msg.sender !== user._id && (!activeChat || msg.chat !== activeChat._id || !document.hasFocus())) {
+        try {
+          const apiUrl = process.env.REACT_APP_API_URL || '';
+          const audio = new window.Audio(`${apiUrl}/notification.mp3`);
+          audio.play().catch(() => {});
+        } catch {}
       }
     }
     socket.on('newMessage', handleNewMessage);
     return () => {
       socket.off('newMessage', handleNewMessage);
     };
-  }, [activeChat, messages, setMessages, setChats]);
+  }, [activeChat, messages, setMessages, setChats, user]);
 }
