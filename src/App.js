@@ -57,11 +57,11 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={user ? <Profile /> : <Login />} />
-        <Route path="/search" element={user ? <UserSearch /> : <Login />} />
-        <Route path="/user/:id" element={user ? <UserProfile /> : <Login />} />
-        <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Login />} />
-        <Route path="/" element={user ? <ChatList /> : <Login />} />
+        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/search" element={user ? <UserSearch /> : <Navigate to="/login" />} />
+        <Route path="/user/:id" element={user ? <UserProfile /> : <Navigate to="/login" />} />
+        <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
