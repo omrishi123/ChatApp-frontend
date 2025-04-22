@@ -1,18 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { getSocket } from '../utils/socket';
 import { useChat } from '../context/ChatContext';
 import { useAuth } from '../context/AuthContext';
 
 // This hook listens globally for new messages and updates the relevant chat/message state
 export default function useSocketMessageListener() {
-  const { activeChat, messages, setMessages, chats, setChats } = useChat();
+  const { activeChat, messages, setMessages, setChats } = useChat();
   const { user } = useAuth();
+  // Refs to always access latest values inside handler
+  const activeChatRef = useRef(activeChat);
+  const messagesRef = useRef(messages);
+  useEffect(() => { activeChatRef.current = activeChat; }, [activeChat]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   useEffect(() => {
     const socket = getSocket();
     function handleNewMessage(msg) {
       console.log('Received newMessage:', msg);
-      // Always update chat preview/unread (even if chat is not open)
       setChats(prevChats => {
         let found = false;
         const updated = prevChats.map(chat => {
@@ -21,7 +25,7 @@ export default function useSocketMessageListener() {
             return {
               ...chat,
               lastMessage: msg,
-              unreadCount: (!activeChat || chat._id !== activeChat._id) ? (chat.unreadCount || 0) + 1 : 0
+              unreadCount: (!activeChatRef.current || chat._id !== activeChatRef.current._id) ? (chat.unreadCount || 0) + 1 : 0
             };
           }
           return chat;
@@ -39,16 +43,15 @@ export default function useSocketMessageListener() {
         return updated;
       });
       // If active chat is open, append message
-      if (activeChat && msg.chat === activeChat._id) {
-        if (!messages.some(m => m._id === msg._id)) {
+      if (activeChatRef.current && msg.chat === activeChatRef.current._id) {
+        if (!messagesRef.current.some(m => m._id === msg._id)) {
           setMessages(prev => [...prev, msg].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
         }
       }
       // Always play notification sound for any new message not sent by me
-      if (msg.sender !== user._id && (!activeChat || msg.chat !== activeChat._id || !document.hasFocus())) {
+      if (msg.sender !== user._id && (!activeChatRef.current || msg.chat !== activeChatRef.current._id || !document.hasFocus())) {
         try {
-          const apiUrl = process.env.REACT_APP_API_URL || '';
-          const audio = new window.Audio(`${apiUrl}/notification.mp3`);
+          const audio = new window.Audio('/notification.mp3');
           audio.play().catch(() => {});
         } catch {}
       }
@@ -57,5 +60,5 @@ export default function useSocketMessageListener() {
     return () => {
       socket.off('newMessage', handleNewMessage);
     };
-  }, [activeChat, messages, setMessages, setChats, user]);
+  }, [setChats, setMessages, user._id]);
 }
