@@ -29,7 +29,7 @@ export default function useSocketMessageListener() {
       // Play notification sound if chat is not open
       if (!activeChat || msg.chat !== activeChat._id) {
         const apiUrl = process.env.REACT_APP_API_URL || '';
-        const audio = new window.Audio(`${apiUrl}/notification.mp3`);
+        const audio = new window.Audio(`${apiUrl}/public/notification.mp3`);
         audio.play();
       }
     }
