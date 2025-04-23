@@ -9,6 +9,13 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
 
+  // Helper to get correct profile image URL
+  function getProfilePicUrl(pic) {
+    if (!pic) return '/default-avatar.png';
+    if (pic.startsWith('/uploads/')) return `${process.env.REACT_APP_API_URL}${pic}`;
+    return `${process.env.REACT_APP_API_URL}/uploads/${pic}`;
+  }
+
   const handleChange = e => {
     const { name, value, files } = e.target;
     if (name === 'profilePic' && files && files[0]) {
@@ -37,11 +44,7 @@ export default function Profile() {
         src={
           preview
             ? preview
-            : user.profilePic
-              ? user.profilePic.startsWith('/uploads/')
-                ? `${process.env.REACT_APP_API_URL}${user.profilePic}`
-                : `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}`
-              : '/default-avatar.png'
+            : getProfilePicUrl(user.profilePic)
         }
         alt="Profile"
         className="profile-pic"
