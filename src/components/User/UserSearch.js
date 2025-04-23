@@ -41,9 +41,9 @@ export default function UserSearch() {
           <li key={u._id}>
             <img src={
               u.profilePic
-                ? u.profilePic.startsWith('/uploads/')
-                  ? `${process.env.REACT_APP_API_URL}${u.profilePic}`
-                  : `${process.env.REACT_APP_API_URL}/uploads/${u.profilePic}`
+                ? (u.profilePic.startsWith('/uploads/') 
+                  ? `${process.env.REACT_APP_API_URL}${u.profilePic}` 
+                  : `${process.env.REACT_APP_API_URL}/uploads/${u.profilePic}`)
                 : '/default-avatar.png'
             } alt={u.username} className="profile-pic" />
             <span>{u.username}</span>

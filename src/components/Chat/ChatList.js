@@ -37,7 +37,9 @@ export default function ChatList() {
         <img
           src={
             user.profilePic
-              ? `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}`
+              ? user.profilePic.startsWith('/uploads/')
+                ? `${process.env.REACT_APP_API_URL}${user.profilePic}`
+                : `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}`
               : '/default-avatar.png'
           }
           alt="Me"
@@ -56,7 +58,9 @@ export default function ChatList() {
               <img
                 src={
                   other.profilePic
-                    ? `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`
+                    ? other.profilePic.startsWith('/uploads/')
+                      ? `${process.env.REACT_APP_API_URL}${other.profilePic}`
+                      : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`
                     : '/default-avatar.png'
                 }
                 alt={other.username}

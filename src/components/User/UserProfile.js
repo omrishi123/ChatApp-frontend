@@ -40,7 +40,9 @@ export default function UserProfile() {
     <div className="user-profile-container">
       <img src={
         profile.profilePic
-          ? `${process.env.REACT_APP_API_URL}/uploads/${profile.profilePic}`
+          ? profile.profilePic.startsWith('/uploads/')
+            ? `${process.env.REACT_APP_API_URL}${profile.profilePic}`
+            : `${process.env.REACT_APP_API_URL}/uploads/${profile.profilePic}`
           : '/default-avatar.png'
       } alt={profile.username} className="profile-pic" />
       <h2>{profile.username}</h2>
