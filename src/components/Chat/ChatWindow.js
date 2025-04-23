@@ -23,10 +23,6 @@ export default function ChatWindow() {
   useEffect(() => {
     if (!chatId || !token) return;
     getMessages(token, chatId).then(setMessages);
-    const chat = chats.find(c => c._id === chatId);
-    if (chat) {
-      setOtherUser(chat.otherUser || chat.participants.find(u => u._id !== user.id));
-    }
     const socket = getSocket();
     socket.emit('joinChat', { chatId });
     // Mark all received (not yet seen) messages as seen
@@ -63,6 +59,13 @@ export default function ChatWindow() {
       socket.off('stopTyping');
     };
   }, [chatId, token, setMessages, chats, user, messages]);
+
+  useEffect(() => {
+    const chat = chats.find(c => c._id === chatId);
+    if (chat) {
+      setOtherUser(chat.otherUser || chat.participants.find(u => u._id !== user.id));
+    }
+  }, [chatId, chats, user.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
