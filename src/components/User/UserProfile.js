@@ -38,7 +38,13 @@ export default function UserProfile() {
   if (!profile) return <div>Loading...</div>;
   return (
     <div className="user-profile-container">
-      <img src={profile.profilePic || '/default-avatar.png'} alt={profile.username} className="profile-pic" />
+      <img src={
+        profile.profilePic
+          ? profile.profilePic.startsWith('/uploads/')
+            ? `${process.env.REACT_APP_API_URL}${profile.profilePic}`
+            : `${process.env.REACT_APP_API_URL}/uploads/${profile.profilePic}`
+          : '/default-avatar.png'
+      } alt={profile.username} className="profile-pic" />
       <h2>{profile.username}</h2>
       <div>Last seen: {profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Unknown'}</div>
       <div>Status: {profile.online ? 'Online' : 'Offline'}</div>
