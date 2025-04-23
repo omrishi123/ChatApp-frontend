@@ -29,6 +29,11 @@ export default function ChatWindow() {
     }
     const socket = getSocket();
     socket.emit('joinChat', { chatId });
+    // Mark all received (not yet seen) messages as seen
+    const unseen = messages.filter(m => m.receiver === user.id && !m.seen);
+    unseen.forEach(m => {
+      socket.emit('seenMessage', { chatId, messageId: m._id, userId: user.id });
+    });
     // Real-time: update messages in-memory on newMessage, no reload
     socket.on('newMessage', m => {
       if (m.chat === chatId) {
@@ -41,6 +46,10 @@ export default function ChatWindow() {
         });
       }
     });
+    // Listen for messageSeen event
+    socket.on('messageSeen', ({ messageId, userId }) => {
+      setMessages(prev => prev.map(m => m._id === messageId ? { ...m, seen: true } : m));
+    });
     socket.on('typing', ({ chatId: cId, userId }) => {
       if (cId === chatId && userId !== user.id) setTyping(true);
     });
@@ -49,10 +58,11 @@ export default function ChatWindow() {
     });
     return () => {
       socket.off('newMessage');
+      socket.off('messageSeen');
       socket.off('typing');
       socket.off('stopTyping');
     };
-  }, [chatId, token, setMessages, chats, user]);
+  }, [chatId, token, setMessages, chats, user, messages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
