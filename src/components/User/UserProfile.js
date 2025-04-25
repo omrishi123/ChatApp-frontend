@@ -11,9 +11,12 @@ export default function UserProfile() {
   const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
-    getUserProfile(token, id).then(setProfile);
-    // Always check latest block status from profile (not just from AuthContext)
-    setBlocked(!!profile?.blockedByMe);
+    async function fetchProfileAndBlock() {
+      const prof = await getUserProfile(token, id);
+      setProfile(prof);
+      setBlocked(!!prof.blockedByMe); // Use backend truth only
+    }
+    fetchProfileAndBlock();
   }, [id, token]);
 
   const handleBlock = async () => {

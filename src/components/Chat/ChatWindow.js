@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { getMessages, sendMessage } from '../../utils/api';
@@ -23,6 +23,8 @@ export default function ChatWindow() {
 
   // Track if user is at bottom
   const [isAtBottom, setIsAtBottom] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!chatId || !token) return;
@@ -158,7 +160,7 @@ export default function ChatWindow() {
       <header className="chat-header">
         <span
           onClick={() => otherUser && navigate(`/user/${otherUser._id || otherUser.id}`)}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', display: 'inline-block' }}
         >
           <img
             src={
