@@ -12,14 +12,18 @@ export default function UserProfile() {
 
   useEffect(() => {
     getUserProfile(token, id).then(setProfile);
-    if (user.blockedUsers?.includes(id)) setBlocked(true);
-  }, [id, token, user]);
+    // Always check latest block status from profile (not just from AuthContext)
+    setBlocked(!!profile?.blockedByMe);
+  }, [id, token]);
 
   const handleBlock = async () => {
     try {
       await blockUser(token, id);
       setBlocked(true);
       toast.success('User blocked');
+      // Refresh profile after blocking
+      const updated = await getUserProfile(token, id);
+      setProfile(updated);
     } catch {
       toast.error('Failed to block');
     }
@@ -30,6 +34,9 @@ export default function UserProfile() {
       await unblockUser(token, id);
       setBlocked(false);
       toast.success('User unblocked');
+      // Refresh profile after unblocking
+      const updated = await getUserProfile(token, id);
+      setProfile(updated);
     } catch {
       toast.error('Failed to unblock');
     }

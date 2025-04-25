@@ -156,19 +156,22 @@ export default function ChatWindow() {
   return (
     <div className="chat-window-container">
       <header className="chat-header">
-        <img
-          src={
-            otherUser?.profilePic
-              ? otherUser.profilePic.startsWith('/uploads/')
-                ? `${process.env.REACT_APP_API_URL}${otherUser.profilePic}`
-                : `${process.env.REACT_APP_API_URL}/uploads/${otherUser.profilePic}`
-              : '/default-avatar.png'
-          }
-          alt={otherUser?.username}
-          className="profile-pic"
+        <span
           onClick={() => otherUser && navigate(`/user/${otherUser._id || otherUser.id}`)}
           style={{ cursor: 'pointer' }}
-        />
+        >
+          <img
+            src={
+              otherUser?.profilePic
+                ? otherUser.profilePic.startsWith('/uploads/')
+                  ? `${process.env.REACT_APP_API_URL}${otherUser.profilePic}`
+                  : `${process.env.REACT_APP_API_URL}/uploads/${otherUser.profilePic}`
+                : '/default-avatar.png'
+            }
+            alt={otherUser?.username}
+            className="profile-pic"
+          />
+        </span>
         <span className="chat-user-name">{otherUser?.username}</span>
         {renderStatus(otherUser)}
         <span className="typing-indicator">{typing && 'Typing...'}</span>
