@@ -31,6 +31,20 @@ export default function ChatList() {
     navigate(`/chat/${chat._id}`);
   };
 
+  // Helper for online status
+  function renderStatus(user) {
+    if (user.online) return <span style={{color:'#25d366',fontWeight:'bold',fontSize:'0.8em',marginLeft:6}}>● Online</span>;
+    if (user.lastSeen) {
+      const last = new Date(user.lastSeen);
+      const now = new Date();
+      const diff = Math.floor((now - last)/60000);
+      if (diff < 1) return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen just now</span>;
+      if (diff < 60) return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen {diff} min ago</span>;
+      return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen {last.toLocaleString()}</span>;
+    }
+    return null;
+  }
+
   return (
     <div className="chat-list-container">
       <header>
@@ -66,6 +80,7 @@ export default function ChatList() {
                 alt={other.username}
                 className="profile-pic"
               />
+              {renderStatus(other)}
               <div>
                 <div className="chat-title">{other.username}</div>
                 <div className="last-message">{chat.lastMessage?.text || (chat.lastMessage?.media ? '[Media]' : '')}</div>
