@@ -166,6 +166,8 @@ export default function ChatWindow() {
           }
           alt={otherUser?.username}
           className="profile-pic"
+          onClick={() => otherUser && navigate(`/user/${otherUser._id || otherUser.id}`)}
+          style={{ cursor: 'pointer' }}
         />
         <span className="chat-user-name">{otherUser?.username}</span>
         {renderStatus(otherUser)}

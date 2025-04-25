@@ -79,6 +79,8 @@ export default function ChatList() {
                 }
                 alt={other.username}
                 className="profile-pic"
+                onClick={e => { e.stopPropagation(); navigate(`/user/${other._id || other.id}`); }}
+                style={{ cursor: 'pointer' }}
               />
               {renderStatus(other)}
               <div>
