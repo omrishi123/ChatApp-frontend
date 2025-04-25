@@ -14,19 +14,23 @@ export default function UserProfile() {
     async function fetchProfileAndBlock() {
       const prof = await getUserProfile(token, id);
       setProfile(prof);
-      setBlocked(!!prof.blockedByMe); // Use backend truth only
+      setBlocked(!!prof.blockedByMe);
     }
     fetchProfileAndBlock();
   }, [id, token]);
 
+  // Always re-calculate blocked from profile when profile changes
+  useEffect(() => {
+    if (profile) setBlocked(!!profile.blockedByMe);
+  }, [profile]);
+
   const handleBlock = async () => {
     try {
       await blockUser(token, id);
-      setBlocked(true);
-      toast.success('User blocked');
-      // Refresh profile after blocking
+      // Instead of setBlocked(true), always refresh profile and derive blocked from backend
       const updated = await getUserProfile(token, id);
       setProfile(updated);
+      toast.success('User blocked');
     } catch {
       toast.error('Failed to block');
     }
@@ -35,11 +39,10 @@ export default function UserProfile() {
   const handleUnblock = async () => {
     try {
       await unblockUser(token, id);
-      setBlocked(false);
-      toast.success('User unblocked');
-      // Refresh profile after unblocking
+      // Instead of setBlocked(false), always refresh profile and derive blocked from backend
       const updated = await getUserProfile(token, id);
       setProfile(updated);
+      toast.success('User unblocked');
     } catch {
       toast.error('Failed to unblock');
     }
