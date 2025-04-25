@@ -19,6 +19,10 @@ export default function ChatWindow() {
   const [showDelete, setShowDelete] = useState(false);
   const deleteTimeoutRef = useRef(null);
   const messagesEndRef = useRef();
+  const messagesListRef = useRef();
+
+  // Track if user is at bottom
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   useEffect(() => {
     if (!chatId || !token) return;
@@ -68,8 +72,19 @@ export default function ChatWindow() {
   }, [chatId, chats, user.id]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    // Only scroll to bottom if user is already at bottom
+    if (isAtBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isAtBottom]);
+
+  // Scroll handler
+  const handleScroll = () => {
+    const el = messagesListRef.current;
+    if (!el) return;
+    // If user is within 40px of bottom, treat as "at bottom"
+    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 40);
+  };
 
   // Delete message API call
   async function handleDeleteMessage() {
@@ -140,7 +155,10 @@ export default function ChatWindow() {
         <span className="chat-user-name">{otherUser?.username}</span>
         <span className="typing-indicator">{typing && 'Typing...'}</span>
       </header>
-      <div className="messages-list" style={{ marginBottom: '70px' }}>
+      <div className="messages-list" style={{ marginBottom: '70px' }}
+        ref={messagesListRef}
+        onScroll={handleScroll}
+      >
         {[...messages].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).map(m => {
           const senderId = typeof m.sender === 'object' ? m.sender._id : m.sender;
           const isMe = senderId === user.id;
