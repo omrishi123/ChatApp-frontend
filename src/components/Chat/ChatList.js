@@ -24,6 +24,7 @@ export default function ChatList() {
       navigate(`/chat/${aiChat._id}`);
       return;
     }
+    console.log("Token before sending AI message:", token);
     try {
       // No AI chat yet: create one by sending a welcome message
       const res = await sendAiMessage(token, 'Hi', null);
