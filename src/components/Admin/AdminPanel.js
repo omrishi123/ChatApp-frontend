@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../utils/api.js';
 import './AdminPanel.css';
+import AiBotProfilePic from './AiBotProfilePic';
 
 export default function AdminPanel({ token, onLogout }) {
   const [users, setUsers] = useState([]);
@@ -43,6 +44,9 @@ export default function AdminPanel({ token, onLogout }) {
   const [backupStatus, setBackupStatus] = useState('');
   const [restoreStatus, setRestoreStatus] = useState('');
 
+  // --- AI Bot Profile Pic ---
+  const [aiBotPic, setAiBotPic] = useState('');
+
   useEffect(() => {
     setLoading(true);
     setError('');
@@ -50,6 +54,11 @@ export default function AdminPanel({ token, onLogout }) {
       .catch(e => setError('Failed to load admin data'))
       .finally(() => setLoading(false));
     // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    // Fetch AI bot user profile pic on mount
+    API.get('/api/users/ai-bot-profile').then(res => setAiBotPic(res.data.profilePic)).catch(() => {});
   }, []);
 
   async function fetchUsers() {
@@ -608,6 +617,7 @@ export default function AdminPanel({ token, onLogout }) {
     return (
       <div className="admin-section">
         <h3>System Tools</h3>
+        <AiBotProfilePic token={token} currentPic={aiBotPic} onUploaded={setAiBotPic} />
         <button onClick={handleGetHealth}>Check Server Health</button>
         {serverHealth && (
           <pre className="admin-health" style={{ background: '#f8f9fa', padding: 8 }}>{JSON.stringify(serverHealth, null, 2)}</pre>

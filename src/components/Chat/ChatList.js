@@ -5,11 +5,38 @@ import { getChats } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../utils/socket';
 import { formatTime } from '../../utils/helpers';
+import AiChatButton from './AiChatButton';
+import { sendAiMessage } from '../../utils/aiApi';
 
 export default function ChatList() {
   const { user, token, logout } = useAuth();
   const { chats, setChats, setActiveChat, resetMessages } = useChat();
   const navigate = useNavigate();
+
+  // AI Chat: find if already exists
+  const aiChat = chats.find(c => (c.otherUser?.ai_bot || c.participants?.some(u => u.ai_bot)));
+
+  // Launch AI chat: create if not present, else open
+  const handleAiChat = async () => {
+    resetMessages();
+    if (aiChat) {
+      setActiveChat(aiChat);
+      navigate(`/chat/${aiChat._id}`);
+      return;
+    }
+    // No AI chat yet: create one by sending a welcome message
+    const res = await sendAiMessage(token, 'Hi', null);
+    const newChat = {
+      _id: res.chatId,
+      otherUser: { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true },
+      lastMessage: res.aiMsg,
+      participants: [user, { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true }],
+      unreadCount: 0
+    };
+    setChats(prev => [...prev, newChat]);
+    setActiveChat(newChat);
+    navigate(`/chat/${res.chatId}`);
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -61,6 +88,7 @@ export default function ChatList() {
           onClick={() => navigate('/profile')}
         />
         <button onClick={() => navigate('/search')}>New Chat</button>
+        <AiChatButton onClick={handleAiChat} />
         <button onClick={logout}>Logout</button>
       </header>
       <h2>Chats</h2>
