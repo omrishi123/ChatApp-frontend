@@ -6,7 +6,6 @@ import { getMessages, sendMessage } from '../../utils/api';
 import { getSocket } from '../../utils/socket';
 import MessageInput from './MessageInput';
 import { formatTime } from '../../utils/helpers';
-import { sendAiMessage } from '../../utils/aiApi';
 import '../../whatsapp-theme.css';
 
 export default function ChatWindow() {
@@ -165,10 +164,10 @@ export default function ChatWindow() {
   async function handleSendAi(text) {
     setSending(true);
     try {
-      const res = await sendAiMessage(token, text, chatId);
-      setMessages(prev => [...prev, res.aiMsg]);
+      const res = await sendMessage(token, text, chatId);
+      setMessages(prev => [...prev, res]);
     } catch (err) {
-      alert('AI error: ' + (err?.response?.data?.msg || err.message));
+      alert('Error sending message: ' + (err?.response?.data?.msg || err.message));
     }
     setSending(false);
   }
@@ -299,7 +298,7 @@ export default function ChatWindow() {
       )}
       <MessageInput
         chatId={chatId}
-        onSend={isAiChat ? handleSendAi : undefined}
+        onSend={handleSendAi}
         disabled={sending}
       />
     </div>
