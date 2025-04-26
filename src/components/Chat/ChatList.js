@@ -24,18 +24,27 @@ export default function ChatList() {
       navigate(`/chat/${aiChat._id}`);
       return;
     }
-    // No AI chat yet: create one by sending a welcome message
-    const res = await sendAiMessage(token, 'Hi', null);
-    const newChat = {
-      _id: res.chatId,
-      otherUser: { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true },
-      lastMessage: res.aiMsg,
-      participants: [user, { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true }],
-      unreadCount: 0
-    };
-    setChats(prev => [...prev, newChat]);
-    setActiveChat(newChat);
-    navigate(`/chat/${res.chatId}`);
+    try {
+      // No AI chat yet: create one by sending a welcome message
+      const res = await sendAiMessage(token, 'Hi', null);
+      const newChat = {
+        _id: res.chatId,
+        otherUser: { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true },
+        lastMessage: res.aiMsg,
+        participants: [user, { _id: res.aiMsg.sender, username: "OM'S AI", ai_bot: true }],
+        unreadCount: 0
+      };
+      setChats(prev => [...prev, newChat]);
+      setActiveChat(newChat);
+      navigate(`/chat/${res.chatId}`);
+    } catch (err) {
+      alert(
+        err?.response?.data?.msg ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to start OM'S AI chat. Check your backend logs."
+      );
+    }
   };
 
   useEffect(() => {
