@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { getChats } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../utils/socket';
 import { formatTime } from '../../utils/helpers';
+import StatusTab from './StatusTab'; // Import StatusTab component
 
 export default function ChatList() {
   const { user, token, logout } = useAuth();
   const { chats, setChats, setActiveChat, resetMessages } = useChat();
   const navigate = useNavigate();
+  const [showStatus, setShowStatus] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -61,42 +63,56 @@ export default function ChatList() {
           onClick={() => navigate('/profile')}
         />
         <button onClick={() => navigate('/search')}>New Chat</button>
+        <button onClick={() => setShowStatus(true)} style={{marginLeft:8}}>
+          <span role="img" aria-label="Status">🟢</span> Status
+        </button>
         <button onClick={logout}>Logout</button>
       </header>
-      <h2>Chats</h2>
-      <ul className="chat-list">
-        {chats.map(chat => {
-          const other = chat.otherUser || chat.participants.find(u => u._id !== user.id);
-          return (
-            <li key={chat._id} className="chat-list-item" onClick={() => openChat(chat)}>
-              <img
-                src={
-                  other.profilePic
-                    ? other.profilePic.startsWith('/uploads/')
-                      ? `${process.env.REACT_APP_API_URL}${other.profilePic}`
-                      : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`
-                    : '/default-avatar.png'
-                }
-                alt={other.username}
-                className="profile-pic"
-                onClick={e => { e.stopPropagation(); navigate(`/user/${other._id || other.id}`); }}
-                style={{ cursor: 'pointer' }}
-              />
-              {renderStatus(other)}
-              <div>
-                <div className="chat-title">{other.username}</div>
-                <div className="last-message">{chat.lastMessage?.text || (chat.lastMessage?.media ? '[Media]' : '')}</div>
-              </div>
-              <div className="chat-meta">
-                <span>{chat.lastMessage ? formatTime(chat.lastMessage.createdAt) : ''}</span>
-                {chat.unreadCount > 0 && (
-                  <span className="unread-badge">{chat.unreadCount}</span>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {showStatus ? (
+        <StatusTab
+          token={token}
+          user={user}
+          chatContacts={chats.map(chat => chat.otherUser || chat.participants.find(u => u._id !== user.id))}
+          onBack={() => setShowStatus(false)}
+        />
+      ) : (
+        <>
+          <h2>Chats</h2>
+          <ul className="chat-list">
+            {chats.map(chat => {
+              const other = chat.otherUser || chat.participants.find(u => u._id !== user.id);
+              return (
+                <li key={chat._id} className="chat-list-item" onClick={() => openChat(chat)}>
+                  <img
+                    src={
+                      other.profilePic
+                        ? other.profilePic.startsWith('/uploads/')
+                          ? `${process.env.REACT_APP_API_URL}${other.profilePic}`
+                          : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`
+                        : '/default-avatar.png'
+                    }
+                    alt={other.username}
+                    className="profile-pic"
+                    onClick={e => { e.stopPropagation(); navigate(`/user/${other._id || other.id}`); }}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  {renderStatus(other)}
+                  <div>
+                    <div className="chat-title">{other.username}</div>
+                    <div className="last-message">{chat.lastMessage?.text || (chat.lastMessage?.media ? '[Media]' : '')}</div>
+                  </div>
+                  <div className="chat-meta">
+                    <span>{chat.lastMessage ? formatTime(chat.lastMessage.createdAt) : ''}</span>
+                    {chat.unreadCount > 0 && (
+                      <span className="unread-badge">{chat.unreadCount}</span>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

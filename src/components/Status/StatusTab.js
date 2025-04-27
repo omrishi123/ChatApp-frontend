@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../utils/api';
+import { FiCamera } from 'react-icons/fi';
+import { IoSend } from 'react-icons/io5';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 import './StatusTab.css';
 
-export default function StatusTab({ token, user, chatContacts }) {
+export default function StatusTab({ token, user, chatContacts, onBack }) {
   const [statuses, setStatuses] = useState([]);
   const [myStatus, setMyStatus] = useState([]);
   const [statusText, setStatusText] = useState('');
   const [statusMedia, setStatusMedia] = useState(null);
   const [hideFrom, setHideFrom] = useState([]);
   const [showHideMenu, setShowHideMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -65,13 +69,23 @@ export default function StatusTab({ token, user, chatContacts }) {
 
   return (
     <div className="status-tab-container">
+      <button onClick={onBack} className="status-back-btn">Back</button>
       <h2>Status</h2>
       <form className="status-upload-form" onSubmit={handlePostStatus}>
         <input type="text" placeholder="Type a status..." value={statusText} onChange={e => setStatusText(e.target.value)} />
-        <input type="file" accept="image/*,video/*" onChange={e => setStatusMedia(e.target.files[0])} />
-        <button type="submit">Post</button>
-        <button type="button" onClick={() => setShowHideMenu(true)}>Hide status from...</button>
+        <label className="status-upload-camera">
+          <FiCamera size={22} />
+          <input type="file" accept="image/*,video/*" onChange={e => setStatusMedia(e.target.files[0])} style={{ display: 'none' }} />
+        </label>
+        <button type="submit" className="status-upload-send"><IoSend size={22} /></button>
+        <button type="button" className="status-upload-menu" onClick={() => setShowMenu(!showMenu)}><BsThreeDotsVertical size={20} /></button>
       </form>
+      {showMenu && (
+        <div className="status-menu-dropdown">
+          <button onClick={() => setShowHideMenu(true)}>Hide status from...</button>
+          {/* More menu features can be added here */}
+        </div>
+      )}
       {showHideMenu && (
         <div className="hide-status-menu">
           <h4>Hide status from:</h4>
