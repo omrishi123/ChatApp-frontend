@@ -35,6 +35,9 @@ export default function StatusTab({ token, user, chatContacts, onBack }) {
       });
       setStatuses(Object.values(grouped).filter(g => g.user && g.items.length));
       setError('');
+      if (Object.values(grouped).filter(g => g.user && g.items.length).length === 0) {
+        setError(''); // Do not show error if just empty
+      }
     } catch (err) {
       setError('Failed to load statuses');
     } finally {
@@ -137,7 +140,7 @@ export default function StatusTab({ token, user, chatContacts, onBack }) {
           </div>
         ))}
       </div>
-      {error && <div className="status-error">{error}</div>}
+      {error && statuses.length === 0 && <div className="status-error">{error}</div>}
     </div>
   );
 }

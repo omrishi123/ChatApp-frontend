@@ -12,7 +12,6 @@ import { useAuth } from './context/AuthContext';
 import useSocketMessageListener from './hooks/useSocketMessageListener';
 import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
-import Sidebar from './components/Chat/Sidebar';
 
 function App() {
   const { user, token, chatContacts } = useAuth();
@@ -48,30 +47,7 @@ function App() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <Sidebar />
-      <div style={{ flex: 1, overflow: 'auto' }}>
-        <ChatList />
-      </div>
-      {(user && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) && showAnnouncement && pinnedAnnouncement && (
-        <div style={{
-          background: '#ffeeba',
-          color: '#856404',
-          padding: '12px',
-          borderBottom: '1px solid #f5c6cb',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          zIndex: 9999
-        }}>
-          {pinnedAnnouncement.text}
-        </div>
-      )}
-      <ToastContainer />
-    </div>
+    <ChatList />
   );
 }
 
