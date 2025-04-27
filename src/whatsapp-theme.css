@@ -192,6 +192,15 @@ body {
   align-self: flex-end;
 }
 
+.chat-link {
+  color: #0b81ff;
+  text-decoration: underline;
+  word-break: break-all;
+}
+.chat-link:hover {
+  color: #075e54;
+}
+
 /* Message Input */
 .message-input {
   display: flex;

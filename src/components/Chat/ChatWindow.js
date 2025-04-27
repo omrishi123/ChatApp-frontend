@@ -6,6 +6,7 @@ import { getMessages, sendMessage } from '../../utils/api';
 import { getSocket } from '../../utils/socket';
 import MessageInput from './MessageInput';
 import { formatTime } from '../../utils/helpers';
+import { linkify } from '../../utils/linkify';
 import '../../whatsapp-theme.css';
 
 export default function ChatWindow() {
@@ -229,7 +230,10 @@ export default function ChatWindow() {
               onTouchEnd={handleLongPressEnd}
             >
               {m.media && <img src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} alt="media" className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px'}} />}
-              {m.text && <span className="text">{m.text}</span>}
+              <span
+                className="text"
+                dangerouslySetInnerHTML={{ __html: linkify(m.text || m.content || '') }}
+              />
               <span className="meta" style={{fontSize:'0.75em',color:'#555',display:'block',marginTop:'2px'}}>
                 {formatTime(m.createdAt)}
                 {isMe && (
