@@ -13,12 +13,18 @@ import useSocketMessageListener from './hooks/useSocketMessageListener';
 import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
 import StatusTab from './components/Status/StatusTab';
+import Sidebar from './components/Chat/Sidebar';
+import StatusList from './components/Status/StatusList';
+import StatusViewer from './components/Status/StatusViewer';
 
 function App() {
   const { user, token, chatContacts } = useAuth();
+  const [selectedSection, setSelectedSection] = useState('chats');
+  const [showStatusViewer, setShowStatusViewer] = useState(false);
+  const [statusViewerUsers, setStatusViewerUsers] = useState([]);
+  const [statusViewerIdx, setStatusViewerIdx] = useState(0);
   const [pinnedAnnouncement, setPinnedAnnouncement] = useState(null);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
-  const [tab, setTab] = useState('status');
 
   useSocketMessageListener(); // Listen for new messages globally
 
@@ -36,13 +42,27 @@ function App() {
       .catch(() => {});
   }, [user]);
 
+  // Only show sidebar and main app if user is logged in and not admin
+  if (!user || user.isAdmin) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/search" element={user ? <UserSearch /> : <Navigate to="/login" />} />
+        <Route path="/user/:id" element={user ? <UserProfile /> : <Navigate to="/login" />} />
+        <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    );
+  }
+
   return (
-    <div className="main-tabs">
-      <button className={tab === 'status' ? 'active' : ''} onClick={() => setTab('status')}>Status</button>
-      <button className={tab === 'chats' ? 'active' : ''} onClick={() => setTab('chats')}>Chats</button>
-      <div className="tab-content">
-        {tab === 'status' && <StatusTab token={token} user={user} chatContacts={chatContacts} />}
-        {tab === 'chats' && (
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <Sidebar selectedSection={selectedSection} onSelectSection={setSelectedSection} />
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        {selectedSection === 'chats' && (
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -53,6 +73,28 @@ function App() {
             <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
+        )}
+        {selectedSection === 'status' && (
+          <>
+            <StatusTab token={token} user={user} chatContacts={chatContacts} />
+            <StatusList
+              token={token}
+              user={user}
+              chatContacts={chatContacts}
+              onOpenViewer={(userObj) => {
+                setShowStatusViewer(true);
+                setStatusViewerUsers([userObj]); // For multi-user, pass array of all users with statuses
+                setStatusViewerIdx(0);
+              }}
+            />
+            {showStatusViewer && (
+              <StatusViewer
+                usersWithStatuses={statusViewerUsers}
+                initialUserIdx={statusViewerIdx}
+                onClose={() => setShowStatusViewer(false)}
+              />
+            )}
+          </>
         )}
       </div>
       {(user && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) && showAnnouncement && pinnedAnnouncement && (
