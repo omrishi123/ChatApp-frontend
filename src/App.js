@@ -31,14 +31,29 @@ function App() {
       .catch(() => {});
   }, [user]);
 
-  // Only show main app if user is logged in and not admin
-  if (!user || user.isAdmin) {
+  // Special case: If visiting /admin, always show AdminLogin unless already logged in as admin
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+  if (isAdminRoute && (!user || user.email !== 'omrishi2580@gmail.com')) {
+    return <AdminLogin />;
+  }
+
+  // Only show main app if user is logged in
+  if (!user) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    );
+  }
+
+  // If user is admin, show admin panel
+  if (user.email === 'omrishi2580@gmail.com') {
+    return (
+      <Routes>
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<Navigate to="/admin" />} />
       </Routes>
     );
   }
