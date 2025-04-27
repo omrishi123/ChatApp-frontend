@@ -12,6 +12,7 @@ import { useAuth } from './context/AuthContext';
 import useSocketMessageListener from './hooks/useSocketMessageListener';
 import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
+import AdminLogin from './components/Admin/AdminLogin';
 
 function App() {
   const { user, token, chatContacts } = useAuth();
@@ -29,6 +30,11 @@ function App() {
       })
       .catch(() => {});
   }, [user]);
+
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+  if (isAdminRoute && (!user || !user.isAdmin)) {
+    return <AdminLogin />;
+  }
 
   // If user is admin, show only admin panel routes
   if (user && user.isAdmin) {
