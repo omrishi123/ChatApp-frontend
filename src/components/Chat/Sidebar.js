@@ -13,12 +13,7 @@ export default function Sidebar({ onSelectSection, selectedSection }) {
       >
         Chats
       </button>
-      <button
-        className={selectedSection === 'status' ? 'sidebar-btn active' : 'sidebar-btn'}
-        onClick={() => onSelectSection('status')}
-      >
-        Status
-      </button>
+      {/* REMOVE Status button from Sidebar, Status is now only in ChatList */}
     </div>
   );
 }

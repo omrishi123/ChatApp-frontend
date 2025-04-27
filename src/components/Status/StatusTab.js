@@ -26,7 +26,15 @@ export default function StatusTab({ token, user, chatContacts, onBack }) {
     setLoading(true);
     try {
       const res = await API.get('/api/status', { headers: { Authorization: `Bearer ${token}` } });
-      setStatuses(res.data);
+      // Group statuses by user, filter out those with missing user or items
+      const grouped = {};
+      (res.data || []).forEach(s => {
+        if (!s.user || !s.user._id) return;
+        if (!grouped[s.user._id]) grouped[s.user._id] = { user: s.user, items: [] };
+        grouped[s.user._id].items.push(s);
+      });
+      setStatuses(Object.values(grouped).filter(g => g.user && g.items.length));
+      setError('');
     } catch (err) {
       setError('Failed to load statuses');
     } finally {
