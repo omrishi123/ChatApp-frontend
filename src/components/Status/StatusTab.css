@@ -1,0 +1,44 @@
+.status-tab-container {
+  padding: 24px;
+}
+.status-upload-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.status-feed {
+  margin-top: 24px;
+}
+.status-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fafbfc;
+}
+.status-media {
+  max-width: 120px;
+  max-height: 120px;
+  display: block;
+  margin-bottom: 8px;
+}
+.status-user {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.status-meta {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 4px;
+}
+.status-error {
+  color: red;
+  margin-top: 12px;
+}
+.hide-status-menu {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}

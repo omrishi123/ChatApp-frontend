@@ -12,11 +12,13 @@ import { useAuth } from './context/AuthContext';
 import useSocketMessageListener from './hooks/useSocketMessageListener';
 import API from './utils/api.js';
 import AdminPage from './pages/AdminPage';
+import StatusTab from './components/Status/StatusTab';
 
 function App() {
-  const { user } = useAuth();
+  const { user, token, chatContacts } = useAuth();
   const [pinnedAnnouncement, setPinnedAnnouncement] = useState(null);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [tab, setTab] = useState('status');
 
   useSocketMessageListener(); // Listen for new messages globally
 
@@ -35,8 +37,24 @@ function App() {
   }, [user]);
 
   return (
-    <>
-      <ToastContainer />
+    <div className="main-tabs">
+      <button className={tab === 'status' ? 'active' : ''} onClick={() => setTab('status')}>Status</button>
+      <button className={tab === 'chats' ? 'active' : ''} onClick={() => setTab('chats')}>Chats</button>
+      <div className="tab-content">
+        {tab === 'status' && <StatusTab token={token} user={user} chatContacts={chatContacts} />}
+        {tab === 'chats' && (
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+            <Route path="/search" element={user ? <UserSearch /> : <Navigate to="/login" />} />
+            <Route path="/user/:id" element={user ? <UserProfile /> : <Navigate to="/login" />} />
+            <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Navigate to="/login" />} />
+            <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+        )}
+      </div>
       {(user && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) && showAnnouncement && pinnedAnnouncement && (
         <div style={{
           background: '#ffeeba',
@@ -54,17 +72,8 @@ function App() {
           {pinnedAnnouncement.text}
         </div>
       )}
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        <Route path="/search" element={user ? <UserSearch /> : <Navigate to="/login" />} />
-        <Route path="/user/:id" element={user ? <UserProfile /> : <Navigate to="/login" />} />
-        <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Navigate to="/login" />} />
-        <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
-    </>
+      <ToastContainer />
+    </div>
   );
 }
 
