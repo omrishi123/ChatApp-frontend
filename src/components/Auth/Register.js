@@ -22,7 +22,9 @@ export default function Register() {
       toast.success('Registered!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'Registration failed');
+      const msg = err.response?.data?.msg || err.response?.data?.message || err.message || 'Registration failed';
+      toast.error(msg);
+      alert(msg); // Extra: always show error, even if toast fails
     }
   };
 
