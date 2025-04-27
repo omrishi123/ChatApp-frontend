@@ -30,24 +30,37 @@ function App() {
       .catch(() => {});
   }, [user]);
 
-  // Only show main app if user is logged in and not admin
-  if (!user || user.isAdmin) {
+  // If user is admin, show only admin panel routes
+  if (user && user.isAdmin) {
     return (
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        <Route path="/search" element={user ? <UserSearch /> : <Navigate to="/login" />} />
-        <Route path="/user/:id" element={user ? <UserProfile /> : <Navigate to="/login" />} />
-        <Route path="/chat/:chatId" element={user ? <ChatWindow /> : <Navigate to="/login" />} />
-        <Route path="/" element={user ? <ChatList /> : <Navigate to="/login" />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<Navigate to="/admin" />} />
       </Routes>
     );
   }
 
+  // If not logged in, show only login/register
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    );
+  }
+
+  // For regular users, show all chat/user routes
   return (
-    <ChatList />
+    <Routes>
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/search" element={<UserSearch />} />
+      <Route path="/user/:id" element={<UserProfile />} />
+      <Route path="/chat/:chatId" element={<ChatWindow />} />
+      <Route path="/" element={<ChatList />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }
 
