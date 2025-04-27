@@ -31,27 +31,13 @@ function App() {
       .catch(() => {});
   }, [user]);
 
-  const isAdminRoute = window.location.pathname.startsWith('/admin');
-  if (isAdminRoute && (!user || !user.isAdmin)) {
-    return <AdminLogin />;
-  }
-
-  // If user is admin, show only admin panel routes
-  if (user && user.isAdmin) {
-    return (
-      <Routes>
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<Navigate to="/admin" />} />
-      </Routes>
-    );
-  }
-
-  // If not logged in, show only login/register
-  if (!user) {
+  // Only show main app if user is logged in and not admin
+  if (!user || user.isAdmin) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     );
