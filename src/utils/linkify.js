@@ -1,13 +1,15 @@
-// Converts URLs in text to clickable anchor tags (styled like WhatsApp)
 export function linkify(text) {
   if (!text) return '';
-  // Match URLs, but don't include trailing punctuation
-  const urlRegex = /(https?:\/\/[^\s.,!?")\]]+)/g;
-  // Replace URLs with anchor tags
-  let linked = text.replace(urlRegex, url =>
-    `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${url}</a>`
-  );
-  // Optionally: replace line breaks with <br> for chat formatting
+  // Match URLs, but exclude only trailing punctuation if present
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  // Replace URLs with anchor tags, but trim trailing punctuation from the link
+  let linked = text.replace(urlRegex, url => {
+    // Remove trailing punctuation from the URL for the link, but keep it in the text
+    const match = url.match(/^(.*?)([.,!?")\]]*)$/);
+    const realUrl = match ? match[1] : url;
+    const trailing = match ? match[2] : '';
+    return `<a href="${realUrl}" target="_blank" rel="noopener noreferrer" class="chat-link">${realUrl}</a>${trailing}`;
+  });
   linked = linked.replace(/\n/g, '<br>');
   return linked;
 }
