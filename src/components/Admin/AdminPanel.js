@@ -12,8 +12,6 @@ export default function AdminPanel({ token, onLogout }) {
   const [resetPassword, setResetPassword] = useState('');
   const [resetUserId, setResetUserId] = useState('');
   const [tab, setTab] = useState('users');
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   // --- New: Admin Edit User ---
@@ -43,20 +41,10 @@ export default function AdminPanel({ token, onLogout }) {
   const [backupStatus, setBackupStatus] = useState('');
   const [restoreStatus, setRestoreStatus] = useState('');
 
-  // --- Change Password State ---
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [changePwdStatus, setChangePwdStatus] = useState('');
-
-  // --- Reset Password State ---
-  const [resetNewPassword, setResetNewPassword] = useState('');
-  const [resetPwdStatus, setResetPwdStatus] = useState('');
-
   useEffect(() => {
     setLoading(true);
-    setError('');
     Promise.all([fetchUsers(), fetchChats(), fetchMessages()])
-      .catch(e => setError('Failed to load admin data'))
+      .catch(e => console.error('Failed to load admin data'))
       .finally(() => setLoading(false));
     // eslint-disable-next-line
   }, []);
@@ -66,7 +54,7 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
       setUsers(res.data);
     } catch (err) {
-      setError('Failed to fetch users: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch users: ' + (err.response?.data?.message || err.message));
     }
   }
   async function fetchChats() {
@@ -74,7 +62,7 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/chats', { headers: { Authorization: `Bearer ${token}` } });
       setChats(res.data);
     } catch (err) {
-      setError('Failed to fetch chats: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch chats: ' + (err.response?.data?.message || err.message));
     }
   }
   async function fetchMessages() {
@@ -82,7 +70,7 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/messages', { headers: { Authorization: `Bearer ${token}` } });
       setMessages(res.data);
     } catch (err) {
-      setError('Failed to fetch messages: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch messages: ' + (err.response?.data?.message || err.message));
     }
   }
 
@@ -91,7 +79,7 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } });
       setStats(res.data);
     } catch (err) {
-      setError('Failed to fetch stats: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch stats: ' + (err.response?.data?.message || err.message));
     }
   }
 
@@ -100,7 +88,7 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/keywords', { headers: { Authorization: `Bearer ${token}` } });
       setKeywords(res.data);
     } catch (err) {
-      setError('Failed to fetch keywords: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch keywords: ' + (err.response?.data?.message || err.message));
     }
   }
 
@@ -109,64 +97,50 @@ export default function AdminPanel({ token, onLogout }) {
       const res = await API.get('/api/admin/announcements', { headers: { Authorization: `Bearer ${token}` } });
       setAnnouncements(res.data);
     } catch (err) {
-      setError('Failed to fetch announcements: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch announcements: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleSendMessage(e) {
     e.preventDefault();
     if (!selectedUser || !messageContent) return;
-    setStatus('Sending...');
-    setError('');
     try {
       await API.post('/api/admin/message', {
         toUserId: selectedUser,
         content: messageContent
       }, { headers: { Authorization: `Bearer ${token}` } });
       setMessageContent('');
-      setStatus('Message sent!');
       fetchMessages();
     } catch (err) {
-      setError('Failed to send message: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to send message: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleResetPassword(e) {
     e.preventDefault();
     if (!resetUserId || !resetPassword) return;
-    setStatus('Resetting...');
-    setError('');
     try {
       await API.post('/api/admin/reset-password', {
         userId: resetUserId,
         newPassword: resetPassword
       }, { headers: { Authorization: `Bearer ${token}` } });
       setResetPassword('');
-      setStatus('Password reset!');
     } catch (err) {
-      setError('Failed to reset password: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to reset password: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleBanUser(userId, banned) {
-    setStatus(banned ? 'Unbanning user...' : 'Banning user...');
-    setError('');
     try {
       const res = await API.post('/api/admin/ban', { userId }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus(res.data.msg);
       fetchUsers();
     } catch (err) {
-      setError('Failed to ban/unban user: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to ban/unban user: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleEditUser(e) {
     e.preventDefault();
-    setStatus('Updating user...');
-    setError('');
     try {
       await API.post('/api/admin/edit-user', {
         userId: editUserId,
@@ -174,239 +148,156 @@ export default function AdminPanel({ token, onLogout }) {
         username: editUserUsername,
         profilePic: editUserProfilePic
       }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus('User updated!');
       setEditUserId(''); setEditUserEmail(''); setEditUserUsername(''); setEditUserProfilePic('');
       fetchUsers();
     } catch (err) {
-      setError('Failed to update user: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to update user: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleGetUserActivity(userId) {
-    setStatus('Fetching user activity...');
-    setError('');
     try {
       const res = await API.get(`/api/admin/user-activity/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
       setUserActivity(res.data);
       setActivityUserId(userId);
-      setStatus('');
     } catch (err) {
-      setError('Failed to fetch user activity: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to fetch user activity: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleDeleteMessage(messageId) {
-    setStatus('Deleting message...');
-    setError('');
     try {
       await API.post('/api/admin/delete-message', { messageId }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus('Message deleted!');
       fetchMessages();
     } catch (err) {
-      setError('Failed to delete message: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to delete message: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleDeleteChat(chatId) {
-    setStatus('Deleting chat...');
-    setError('');
     try {
       await API.post('/api/admin/delete-chat', { chatId }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus('Chat deleted!');
       fetchChats();
       fetchMessages();
     } catch (err) {
-      setError('Failed to delete chat: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to delete chat: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleAddKeyword(e) {
     e.preventDefault();
     if (!newKeyword) return;
-    setStatus('Adding keyword...');
-    setError('');
     try {
       await API.post('/api/admin/add-keyword', { word: newKeyword }, { headers: { Authorization: `Bearer ${token}` } });
       setNewKeyword('');
-      setStatus('Keyword added!');
       fetchKeywords();
     } catch (err) {
-      setError('Failed to add keyword: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to add keyword: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleRemoveKeyword(word) {
-    setStatus('Removing keyword...');
-    setError('');
     try {
       await API.post('/api/admin/remove-keyword', { word }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus('Keyword removed!');
       fetchKeywords();
     } catch (err) {
-      setError('Failed to remove keyword: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to remove keyword: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleSendAnnouncement(e) {
     e.preventDefault();
     if (!announcementText) return;
-    setStatus('Sending announcement...');
-    setError('');
     try {
       await API.post('/api/admin/announcement', { text: announcementText, pinned: announcementPinned }, { headers: { Authorization: `Bearer ${token}` } });
       setAnnouncementText(''); setAnnouncementPinned(false);
-      setStatus('Announcement sent!');
       fetchAnnouncements();
     } catch (err) {
-      setError('Failed to send announcement: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to send announcement: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handlePinAnnouncement(announcementId, pinned) {
-    setStatus(pinned ? 'Pinning...' : 'Unpinning...');
-    setError('');
     try {
       await API.post('/api/admin/pin-announcement', { announcementId, pinned }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus(pinned ? 'Announcement pinned!' : 'Announcement unpinned!');
       fetchAnnouncements();
     } catch (err) {
-      setError('Failed to update announcement: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to update announcement: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleDeleteAnnouncement(announcementId) {
-    setStatus('Deleting announcement...');
-    setError('');
     try {
       await API.post('/api/admin/delete-announcement', { announcementId }, { headers: { Authorization: `Bearer ${token}` } });
-      setStatus('Announcement deleted!');
       fetchAnnouncements();
     } catch (err) {
-      setError('Failed to delete announcement: ' + (err.response?.data?.msg || err.message));
-      setStatus('');
+      console.error('Failed to delete announcement: ' + (err.response?.data?.msg || err.message));
     }
   }
 
   async function handleImpersonateUser(e) {
     e.preventDefault();
-    setStatus('Impersonating...');
-    setError('');
     // Only allow valid MongoDB ObjectId as userId
     if (!impersonateUserId.match(/^[a-fA-F0-9]{24}$/)) {
-      setError('Invalid User ID: must be a valid MongoDB ObjectId');
-      setStatus('');
+      console.error('Invalid User ID: must be a valid MongoDB ObjectId');
       return;
     }
     try {
       const res = await API.post('/api/admin/impersonate', { userId: impersonateUserId }, { headers: { Authorization: `Bearer ${token}` } });
       setImpersonateToken(res.data.token);
-      setStatus('Impersonation token generated!');
     } catch (err) {
-      setError('Failed to impersonate: ' + (err.response?.data?.msg || err.message));
-      setStatus('');
+      console.error('Failed to impersonate: ' + (err.response?.data?.msg || err.message));
     }
   }
 
   async function handleGetChatHistory(e) {
     e.preventDefault();
-    setStatus('Fetching chat history...');
-    setError('');
     // Only allow valid MongoDB ObjectId as userId
     if (!chatHistoryUserId.match(/^[a-fA-F0-9]{24}$/)) {
-      setError('Invalid User ID: must be a valid MongoDB ObjectId');
-      setStatus('');
+      console.error('Invalid User ID: must be a valid MongoDB ObjectId');
       return;
     }
     try {
       const res = await API.get(`/api/admin/user-chathistory/${chatHistoryUserId}`, { headers: { Authorization: `Bearer ${token}` } });
       setChatHistory(res.data);
-      setStatus('');
     } catch (err) {
-      setError('Failed to fetch chat history: ' + (err.response?.data?.msg || err.message));
-      setStatus('');
+      console.error('Failed to fetch chat history: ' + (err.response?.data?.msg || err.message));
     }
   }
 
   async function handleGetHealth() {
-    setStatus('Checking server health...');
-    setError('');
     try {
       const res = await API.get('/api/admin/health', { headers: { Authorization: `Bearer ${token}` } });
       setServerHealth(res.data);
-      setStatus('');
     } catch (err) {
-      setError('Failed to get server health: ' + (err.response?.data?.message || err.message));
-      setStatus('');
+      console.error('Failed to get server health: ' + (err.response?.data?.message || err.message));
     }
   }
 
   async function handleBackup() {
-    setBackupStatus('Triggering backup...');
-    setError('');
     try {
       const res = await API.post('/api/admin/backup', {}, { headers: { Authorization: `Bearer ${token}` } });
       setBackupStatus(res.data.msg || 'Backup triggered!');
     } catch (err) {
-      setError('Failed to backup: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to backup: ' + (err.response?.data?.message || err.message));
       setBackupStatus('');
     }
   }
 
   async function handleRestore() {
-    setRestoreStatus('Triggering restore...');
-    setError('');
     try {
       const res = await API.post('/api/admin/restore', {}, { headers: { Authorization: `Bearer ${token}` } });
       setRestoreStatus(res.data.msg || 'Restore triggered!');
     } catch (err) {
-      setError('Failed to restore: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to restore: ' + (err.response?.data?.message || err.message));
       setRestoreStatus('');
-    }
-  }
-
-  async function handleChangePassword(e) {
-    e.preventDefault();
-    setChangePwdStatus('');
-    try {
-      const res = await API.post('/api/auth/change-password', {
-        currentPassword,
-        newPassword
-      }, { headers: { Authorization: `Bearer ${token}` } });
-      setChangePwdStatus(res.data.msg || 'Password changed successfully');
-      setCurrentPassword('');
-      setNewPassword('');
-    } catch (err) {
-      setChangePwdStatus(err.response?.data?.msg || 'Failed to change password');
-    }
-  }
-
-  async function handleResetPassword(e) {
-    e.preventDefault();
-    setResetPwdStatus('');
-    try {
-      const res = await API.post('/api/auth/reset-own-password', {
-        newPassword: resetNewPassword
-      }, { headers: { Authorization: `Bearer ${token}` } });
-      setResetPwdStatus(res.data.msg || 'Password reset successfully');
-      setResetNewPassword('');
-    } catch (err) {
-      setResetPwdStatus(err.response?.data?.msg || 'Failed to reset password');
     }
   }
 
   useEffect(() => {
     setLoading(true);
-    setError('');
     Promise.all([fetchUsers(), fetchChats(), fetchMessages()])
-      .catch(e => setError('Failed to load admin data'))
+      .catch(e => console.error('Failed to load admin data'))
       .finally(() => setLoading(false));
     if (tab === 'analytics') fetchStats();
     if (tab === 'moderation') fetchKeywords();
@@ -549,7 +440,6 @@ export default function AdminPanel({ token, onLogout }) {
           />
           <button type="submit">Send</button>
         </form>
-        {status && <div className="admin-status">{status}</div>}
       </div>
     );
   }
@@ -659,58 +549,12 @@ export default function AdminPanel({ token, onLogout }) {
     );
   }
 
-  function renderChangePassword() {
-    return (
-      <div className="admin-section">
-        <h3>Change Admin Password</h3>
-        <form onSubmit={handleChangePassword} className="admin-support-form">
-          <input
-            type="password"
-            placeholder="Current Password"
-            value={currentPassword}
-            onChange={e => setCurrentPassword(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={e => setNewPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Change Password</button>
-        </form>
-        {changePwdStatus && <div style={{ marginTop: 8 }}>{changePwdStatus}</div>}
-      </div>
-    );
-  }
-
-  function renderResetPassword() {
-    return (
-      <div className="admin-section">
-        <h3>Reset Admin Password</h3>
-        <form onSubmit={handleResetPassword} className="admin-support-form">
-          <input
-            type="password"
-            placeholder="New Password"
-            value={resetNewPassword}
-            onChange={e => setResetNewPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Reset Password</button>
-        </form>
-        {resetPwdStatus && <div style={{ marginTop: 8 }}>{resetPwdStatus}</div>}
-      </div>
-    );
-  }
-
   return (
     <div className="admin-panel-container">
       <div className="admin-panel-header">
         <h2>Admin Dashboard</h2>
         <button onClick={onLogout}>Logout</button>
       </div>
-      {error && <div className="admin-error">{error}</div>}
       <div className="admin-panel-tabs">
         <button className={tab === 'users' ? 'active' : ''} onClick={() => setTab('users')}>Users</button>
         <button className={tab === 'chats' ? 'active' : ''} onClick={() => setTab('chats')}>Chats</button>
@@ -720,8 +564,6 @@ export default function AdminPanel({ token, onLogout }) {
         <button className={tab === 'announcements' ? 'active' : ''} onClick={() => setTab('announcements')}>Announcements</button>
         <button className={tab === 'support' ? 'active' : ''} onClick={() => setTab('support')}>Support Tools</button>
         <button className={tab === 'system' ? 'active' : ''} onClick={() => setTab('system')}>System Tools</button>
-        <button className={tab === 'changepwd' ? 'active' : ''} onClick={() => setTab('changepwd')}>Change Password</button>
-        <button className={tab === 'resetpwd' ? 'active' : ''} onClick={() => setTab('resetpwd')}>Reset Password</button>
       </div>
       <div className="admin-panel-body">
         {tab === 'users' && renderUsers()}
@@ -732,8 +574,6 @@ export default function AdminPanel({ token, onLogout }) {
         {tab === 'announcements' && renderAnnouncements()}
         {tab === 'support' && renderSupport()}
         {tab === 'system' && renderSystem()}
-        {tab === 'changepwd' && renderChangePassword()}
-        {tab === 'resetpwd' && renderResetPassword()}
       </div>
     </div>
   );
