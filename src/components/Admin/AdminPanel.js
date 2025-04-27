@@ -43,6 +43,15 @@ export default function AdminPanel({ token, onLogout }) {
   const [backupStatus, setBackupStatus] = useState('');
   const [restoreStatus, setRestoreStatus] = useState('');
 
+  // --- Change Password State ---
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [changePwdStatus, setChangePwdStatus] = useState('');
+
+  // --- Reset Password State ---
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetPwdStatus, setResetPwdStatus] = useState('');
+
   useEffect(() => {
     setLoading(true);
     setError('');
@@ -363,6 +372,36 @@ export default function AdminPanel({ token, onLogout }) {
     }
   }
 
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setChangePwdStatus('');
+    try {
+      const res = await API.post('/api/auth/change-password', {
+        currentPassword,
+        newPassword
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setChangePwdStatus(res.data.msg || 'Password changed successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+    } catch (err) {
+      setChangePwdStatus(err.response?.data?.msg || 'Failed to change password');
+    }
+  }
+
+  async function handleResetPassword(e) {
+    e.preventDefault();
+    setResetPwdStatus('');
+    try {
+      const res = await API.post('/api/auth/reset-own-password', {
+        newPassword: resetNewPassword
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setResetPwdStatus(res.data.msg || 'Password reset successfully');
+      setResetNewPassword('');
+    } catch (err) {
+      setResetPwdStatus(err.response?.data?.msg || 'Failed to reset password');
+    }
+  }
+
   useEffect(() => {
     setLoading(true);
     setError('');
@@ -620,6 +659,51 @@ export default function AdminPanel({ token, onLogout }) {
     );
   }
 
+  function renderChangePassword() {
+    return (
+      <div className="admin-section">
+        <h3>Change Admin Password</h3>
+        <form onSubmit={handleChangePassword} className="admin-support-form">
+          <input
+            type="password"
+            placeholder="Current Password"
+            value={currentPassword}
+            onChange={e => setCurrentPassword(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            value={newPassword}
+            onChange={e => setNewPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Change Password</button>
+        </form>
+        {changePwdStatus && <div style={{ marginTop: 8 }}>{changePwdStatus}</div>}
+      </div>
+    );
+  }
+
+  function renderResetPassword() {
+    return (
+      <div className="admin-section">
+        <h3>Reset Admin Password</h3>
+        <form onSubmit={handleResetPassword} className="admin-support-form">
+          <input
+            type="password"
+            placeholder="New Password"
+            value={resetNewPassword}
+            onChange={e => setResetNewPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Reset Password</button>
+        </form>
+        {resetPwdStatus && <div style={{ marginTop: 8 }}>{resetPwdStatus}</div>}
+      </div>
+    );
+  }
+
   return (
     <div className="admin-panel-container">
       <div className="admin-panel-header">
@@ -636,6 +720,8 @@ export default function AdminPanel({ token, onLogout }) {
         <button className={tab === 'announcements' ? 'active' : ''} onClick={() => setTab('announcements')}>Announcements</button>
         <button className={tab === 'support' ? 'active' : ''} onClick={() => setTab('support')}>Support Tools</button>
         <button className={tab === 'system' ? 'active' : ''} onClick={() => setTab('system')}>System Tools</button>
+        <button className={tab === 'changepwd' ? 'active' : ''} onClick={() => setTab('changepwd')}>Change Password</button>
+        <button className={tab === 'resetpwd' ? 'active' : ''} onClick={() => setTab('resetpwd')}>Reset Password</button>
       </div>
       <div className="admin-panel-body">
         {tab === 'users' && renderUsers()}
@@ -646,6 +732,8 @@ export default function AdminPanel({ token, onLogout }) {
         {tab === 'announcements' && renderAnnouncements()}
         {tab === 'support' && renderSupport()}
         {tab === 'system' && renderSystem()}
+        {tab === 'changepwd' && renderChangePassword()}
+        {tab === 'resetpwd' && renderResetPassword()}
       </div>
     </div>
   );
