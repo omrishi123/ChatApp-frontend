@@ -58,8 +58,15 @@ export default function UserProfile() {
             : `${process.env.REACT_APP_API_URL}/uploads/${profile.profilePic}`
           : '/default-avatar.png'
       } alt={profile.username} className="profile-pic" />
-      <h2>{profile.username}</h2>
-      <div>Last seen: {profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Unknown'}</div>
+      <h2>
+        {profile.username}
+        {profile.online ? ' ONLINE' : ''}
+      </h2>
+      <div>
+        {profile.online
+          ? null
+          : <>Last seen: {profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Unknown'}</>}
+      </div>
       {blocked ? (
         <button onClick={handleUnblock}>Unblock</button>
       ) : (
