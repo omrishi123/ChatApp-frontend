@@ -16,7 +16,7 @@ export default function Login() {
       const res = await login(email, password);
       doLogin(res.token, res.user);
       toast.success('Logged in!');
-      navigate('/');
+      navigate('/'); // Always go to user dashboard, never redirect to /admin
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed');
     }
