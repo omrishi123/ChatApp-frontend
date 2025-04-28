@@ -141,21 +141,6 @@ export default function ChatWindow() {
     clearTimeout(deleteTimeoutRef.current);
   }
 
-  // Helper for online status
-  function renderStatus(user) {
-    if (!user) return null;
-    if (user.online) return <span style={{color:'#25d366',fontWeight:'bold',fontSize:'0.8em',marginLeft:6}}>● Online</span>;
-    if (user.lastSeen) {
-      const last = new Date(user.lastSeen);
-      const now = new Date();
-      const diff = Math.floor((now - last)/60000);
-      if (diff < 1) return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen just now</span>;
-      if (diff < 60) return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen {diff} min ago</span>;
-      return <span style={{color:'#888',fontSize:'0.8em',marginLeft:6}}>last seen {last.toLocaleString()}</span>;
-    }
-    return null;
-  }
-
   const [sending, setSending] = useState(false);
 
   // Find if this is AI chat
@@ -193,7 +178,6 @@ export default function ChatWindow() {
           />
         </span>
         <span className="chat-user-name">{otherUser?.username}</span>
-        {renderStatus(otherUser)}
         <span className="typing-indicator">{typing && 'Typing...'}</span>
       </header>
       <div className="messages-list" style={{ marginBottom: '70px' }}

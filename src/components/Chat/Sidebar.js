@@ -13,7 +13,6 @@ export default function Sidebar({ onSelectSection, selectedSection }) {
       >
         Chats
       </button>
-      {/* REMOVE Status button from Sidebar, Status is now only in ChatList */}
     </div>
   );
 }

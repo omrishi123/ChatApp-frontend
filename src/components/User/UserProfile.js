@@ -48,21 +48,6 @@ export default function UserProfile() {
     }
   };
 
-  // Helper for online status
-  function renderStatus(user) {
-    if (!user) return null;
-    if (user.online) return <span style={{color:'#25d366',fontWeight:'bold',fontSize:'0.9em',marginLeft:8}}>● Online</span>;
-    if (user.lastSeen) {
-      const last = new Date(user.lastSeen);
-      const now = new Date();
-      const diff = Math.floor((now - last)/60000);
-      if (diff < 1) return <span style={{color:'#888',fontSize:'0.9em',marginLeft:8}}>last seen just now</span>;
-      if (diff < 60) return <span style={{color:'#888',fontSize:'0.9em',marginLeft:8}}>last seen {diff} min ago</span>;
-      return <span style={{color:'#888',fontSize:'0.9em',marginLeft:8}}>last seen {last.toLocaleString()}</span>;
-    }
-    return null;
-  }
-
   if (!profile) return <div>Loading...</div>;
   return (
     <div className="user-profile-container">
@@ -73,9 +58,8 @@ export default function UserProfile() {
             : `${process.env.REACT_APP_API_URL}/uploads/${profile.profilePic}`
           : '/default-avatar.png'
       } alt={profile.username} className="profile-pic" />
-      <h2>{profile.username} {renderStatus(profile)}</h2>
+      <h2>{profile.username}</h2>
       <div>Last seen: {profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Unknown'}</div>
-      <div>Status: {profile.online ? 'Online' : 'Offline'}</div>
       {blocked ? (
         <button onClick={handleUnblock}>Unblock</button>
       ) : (
