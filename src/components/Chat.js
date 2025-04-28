@@ -3,7 +3,6 @@ import { Box } from '@mui/material';
 import ChatHeader from './ChatHeader';
 import Messages from './Messages';
 import ChatFooter from './ChatFooter';
-import StatusTab from '../Status/StatusTab';
 
 const Chat = () => {
     const [text, setText] = useState('');
