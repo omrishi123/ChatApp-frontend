@@ -14,8 +14,8 @@ export default function AdminLogin({ onLogin }) {
     setError('');
     try {
       const res = await API.post('/api/auth/login', { email, password });
-      // CHANGE: Check for admin role instead of hardcoded email
-      if (res.data.user.role !== 'admin') {
+      // REVERT: Check for hardcoded admin email instead of role
+      if (res.data.user.email !== 'omrishi2580@gmail.com') {
         setError('Not an admin account');
         setLoading(false);
         return;
