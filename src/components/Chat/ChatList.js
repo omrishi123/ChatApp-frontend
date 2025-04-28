@@ -51,13 +51,7 @@ export default function ChatList() {
     <div className="chat-list-container">
       <header>
         <img
-          src={
-            user.profilePic
-              ? user.profilePic.startsWith('/uploads/')
-                ? `${process.env.REACT_APP_API_URL}${user.profilePic}`
-                : `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}`
-              : '/default-avatar.png'
-          }
+          src={user && user.profilePic ? user.profilePic.startsWith('/uploads/') ? `${process.env.REACT_APP_API_URL}${user.profilePic}` : `${process.env.REACT_APP_API_URL}/uploads/${user.profilePic}` : '/default-avatar.png'}
           alt="Me"
           className="profile-pic"
           onClick={() => navigate('/profile')}
@@ -84,13 +78,7 @@ export default function ChatList() {
               return (
                 <li key={chat._id} className="chat-list-item" onClick={() => openChat(chat)}>
                   <img
-                    src={
-                      other.profilePic
-                        ? other.profilePic.startsWith('/uploads/')
-                          ? `${process.env.REACT_APP_API_URL}${other.profilePic}`
-                          : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`
-                        : '/default-avatar.png'
-                    }
+                    src={other && other.profilePic ? other.profilePic.startsWith('/uploads/') ? `${process.env.REACT_APP_API_URL}${other.profilePic}` : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}` : '/default-avatar.png'}
                     alt={other.username}
                     className="profile-pic"
                     onClick={e => { e.stopPropagation(); navigate(`/user/${other._id || other.id}`); }}
