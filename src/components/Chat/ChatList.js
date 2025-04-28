@@ -45,19 +45,19 @@ export default function ChatList() {
       </header>
       <h2>Chats</h2>
       <ul className="chat-list">
-        {chats.map(chat => {
-          const other = chat.otherUser || chat.participants.find(u => u._id !== user.id);
+        {Array.isArray(chats) && chats.length > 0 ? chats.map(chat => {
+          const other = chat.otherUser || (Array.isArray(chat.participants) ? chat.participants.find(u => u && u._id !== user.id) : undefined);
           return (
             <li key={chat._id} className="chat-list-item" onClick={() => openChat(chat)}>
               <img
-                src={other && other.profilePic ? other.profilePic.startsWith('/uploads/') ? `${process.env.REACT_APP_API_URL}${other.profilePic}` : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}` : '/default-avatar.png'}
-                alt={other.username}
+                src={other && other.profilePic ? (other.profilePic.startsWith('/uploads/') ? `${process.env.REACT_APP_API_URL}${other.profilePic}` : `${process.env.REACT_APP_API_URL}/uploads/${other.profilePic}`) : '/default-avatar.png'}
+                alt={other && other.username ? other.username : 'User'}
                 className="profile-pic"
-                onClick={e => { e.stopPropagation(); navigate(`/user/${other._id || other.id}`); }}
+                onClick={e => { e.stopPropagation(); if (other) navigate(`/user/${other._id || other.id}`); }}
                 style={{ cursor: 'pointer' }}
               />
               <div>
-                <div className="chat-title">{other.username}</div>
+                <div className="chat-title">{other && other.username ? other.username : 'Unknown User'}</div>
                 <div className="last-message">{chat.lastMessage?.text || (chat.lastMessage?.media ? '[Media]' : '')}</div>
               </div>
               <div className="chat-meta">
@@ -68,7 +68,7 @@ export default function ChatList() {
               </div>
             </li>
           );
-        })}
+        }) : <li>No chats found.</li>}
       </ul>
     </div>
   );
