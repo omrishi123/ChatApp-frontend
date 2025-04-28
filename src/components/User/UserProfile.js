@@ -60,7 +60,7 @@ export default function UserProfile() {
       } alt={profile.username} className="profile-pic" />
       <h2>
         {profile.username}
-        {profile.online ? ' ONLINE' : ''}
+        {profile.online ? <span style={{ color: 'green', marginLeft: 8 }}>ONLINE</span> : ''}
       </h2>
       <div>
         {profile.online
