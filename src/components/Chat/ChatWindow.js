@@ -5,6 +5,7 @@ import { useChat } from '../../context/ChatContext';
 import { getMessages, sendMessage } from '../../utils/api';
 import { getSocket } from '../../utils/socket';
 import MessageInput from './MessageInput';
+import ImagePreviewModal from './ImagePreviewModal';
 import { formatTime } from '../../utils/helpers';
 import { linkify } from '../../utils/linkify';
 import '../../whatsapp-theme.css';
@@ -158,6 +159,8 @@ export default function ChatWindow() {
     setSending(false);
   }
 
+  const [previewMedia, setPreviewMedia] = useState(null); // {src, type}
+
   return (
     <div className="chat-window-container">
       <header className="chat-header">
@@ -213,7 +216,11 @@ export default function ChatWindow() {
               onTouchStart={() => handleLongPressStart(m._id)}
               onTouchEnd={handleLongPressEnd}
             >
-              {m.media && <img src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} alt="media" className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px'}} />}
+              {m.media && (
+                m.media.match(/\.(mp4|webm|ogg)$/i)
+                  ? <video src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} controls className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px',cursor:'pointer'}} onClick={() => setPreviewMedia({src: m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`, type: 'video', username: otherUser?.username})} />
+                  : <img src={m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`} alt="media" className="media-preview" style={{maxWidth:'100%',borderRadius:'8px',marginBottom:'4px',cursor:'pointer'}} onClick={() => setPreviewMedia({src: m.media.startsWith('http') ? m.media : `${process.env.REACT_APP_API_URL}/uploads/${m.media.replace(/^.*[\\/]/, '')}`, type: 'image', username: otherUser?.username})} />
+              )}
               <span
                 className="text"
                 dangerouslySetInnerHTML={{ __html: linkify(m.text || m.content || '') }}
@@ -283,6 +290,14 @@ export default function ChatWindow() {
             🧹
           </button>
         </div>
+      )}
+      {previewMedia && (
+        <ImagePreviewModal
+          src={previewMedia.src}
+          type={previewMedia.type}
+          username={previewMedia.username}
+          onClose={() => setPreviewMedia(null)}
+        />
       )}
       <MessageInput
         chatId={chatId}
