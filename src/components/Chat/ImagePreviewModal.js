@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ImagePreviewModal.css';
+import { FaSearchPlus, FaSearchMinus, FaDownload, FaShareAlt } from 'react-icons/fa';
 
 export default function ImagePreviewModal({
   src,
@@ -24,13 +25,24 @@ export default function ImagePreviewModal({
   function handleZoomOut() {
     setZoom(z => Math.max(z - 0.2, 1));
   }
-  function handleDownload() {
-    const link = document.createElement('a');
-    link.href = src;
-    link.download = src.split('/').pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  async function handleDownload() {
+    try {
+      // Fetch the image as a blob to ensure download works on all platforms
+      const response = await fetch(src, { mode: 'cors' });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = src.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      }, 100);
+    } catch (e) {
+      alert('Failed to download. Try long-press and save on your device.');
+    }
   }
   function handleShare() {
     if (navigator.share) {
@@ -43,6 +55,12 @@ export default function ImagePreviewModal({
   return (
     <div className="image-preview-modal" onClick={onClose}>
       <div className="image-preview-modal-content" onClick={e => e.stopPropagation()}>
+        <div className="preview-actions top">
+          <button onClick={handleZoomIn} title="Zoom In"><FaSearchPlus /></button>
+          <button onClick={handleZoomOut} title="Zoom Out"><FaSearchMinus /></button>
+          <button onClick={handleDownload} title="Download"><FaDownload /></button>
+          <button onClick={handleShare} title="Share"><FaShareAlt /></button>
+        </div>
         <button className="close-btn" onClick={onClose}>&#x2715;</button>
         {type === 'image' ? (
           <img
@@ -55,12 +73,6 @@ export default function ImagePreviewModal({
         ) : (
           <video src={src} controls className="preview-video" />
         )}
-        <div className="preview-actions">
-          <button onClick={handleZoomIn}>Zoom In</button>
-          <button onClick={handleZoomOut}>Zoom Out</button>
-          <button onClick={handleDownload}>Download</button>
-          <button onClick={handleShare}>Share</button>
-        </div>
       </div>
     </div>
   );

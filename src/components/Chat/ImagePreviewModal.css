@@ -62,3 +62,31 @@
 .preview-actions button:hover {
   background: #128c7e;
 }
+.preview-actions.top {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 2;
+}
+.preview-actions.top button {
+  background: rgba(34,34,34,0.9);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px #0006;
+}
+.preview-actions.top button:hover {
+  background: #25d366;
+  color: #fff;
+}
